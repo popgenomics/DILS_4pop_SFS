@@ -1,0 +1,27 @@
+inputFile: /shared/ifbstor1/projects/arabidopsis/DILS/all_loci.fasta # full pathway to the input file (fasta format)
+datapath: /shared/ifbstor1/projects/arabidopsis/DILS/heliconius_flo_txn_mal_ama # full pathway to the directory where the analysis will be performed, i.e, where the results will be stored
+region: coding
+nameA: flo 
+nameB: txn
+nameC: mal
+nameD: ama
+maxN: 0.5
+nMin: 8
+Lmin: 200
+mu: 0.00000000731
+rec: 0.00000000731
+N_bound_min: 0  # effective population sizes
+N_bound_max: 20
+T_bound_min: 0.01 # time of demographic events
+T_bound_max: 5
+M_bound_min: 0.4 # migration rates in 4.N.m
+M_bound_max: 40
+shape_bound_min: 1 # shape parameters of the Beta distributions
+shape_bound_max: 20
+topologies: topo3 #topo1 or topo2 or topo3 or topo1,topo2 or topo1,topo3 or topo2,topo3 or topo1,topo2,topo3
+migAB: 0,1 #0 or 1 or 0,1
+migAC: 0,1
+migAD: 0
+migBC: 0
+migBD: 0,1
+migCD: 0,1

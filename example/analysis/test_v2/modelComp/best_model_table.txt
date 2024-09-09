@@ -1,0 +1,8 @@
+categories	comparison	best_model	post_proba
+topologies	topo1 vs. topo2 vs. topo3	topo2	0.515453333333334
+AB	0 vs. 1	0	0.84046
+AC	0 vs. 1	0	0.897056666666667
+AD	0 vs. 1	0	0.85367
+BC	0 vs. 1	0	0.833056666666667
+BD	0 vs. 1	0	0.86014
+CD	0 vs. 1	0	0.83692

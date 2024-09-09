@@ -1,0 +1,28 @@
+inputFile: /home/croux/Programmes/DILS_4pop/example/data/100_RNAseq.fasta # full pathway to the input file (fasta format)
+datapath: /home/croux/Programmes/DILS_4pop/example/analysis/test_1 # full pathway to the directory where the analysis will be performed, i.e, where the results will be stored
+region: coding
+nameA: E1
+nameB: W3
+nameC: W1
+nameD: W2
+maxN: 0.5
+nMin: 8
+Lmin: 200
+mu: 0.00000000731
+rec: 0.0000000000731
+N_bound_min: 0  # effective population sizes
+N_bound_max: 10
+T_bound_min: 1 # time of demographic events
+T_bound_max: 10
+M_bound_min: 0.4 # migration rates in 4.N.m
+M_bound_max: 40
+shape_bound_min: 1 # shape parameters of the Beta distributions
+shape_bound_max: 20
+topologies: topo3 #topo1 or topo2 or topo3 or topo1,topo2 or topo1,topo3 or topo2,topo3 or topo1,topo2,topo3
+migAB: 0,1 #0 or 1 or 0,1
+migAC: 0
+migAD: 0
+migBC: 0
+migBD: 0
+migCD: 0
+
