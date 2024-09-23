@@ -74,6 +74,7 @@ nameA: E1
 nameB: W3
 nameC: W1
 nameD: W2
+nameOut: NA
 maxN: 0.5
 nMin: 8
 Lmin: 200
@@ -95,6 +96,17 @@ migBC: 0,1
 migBD: 0
 migCD: 0
 ```
+  
+To fold the SFS: set the value **NA** to the parameter **nameOut:**.  
+To unfold the SFS: provide the name of the outgroup species to **nameOut:**.  
+  
+To fix a topology: set **topo1** or **topo2** or **topo3** to **topologies:**.  
+To compare different topologies: **topo1,topo2** or **topo1,topo3** or **topo2,topo3** or **topo1,topo2,topo3** to **topologies:**.  
+  
+To force isolation between population X and Y: set **0** to the parameter **migXY**.  
+To force migration between X and Y: **1** to **migXY**.  
+To compare between migration and isolation: **0,1** to **migXY**.
+  
 
 generalities:  
 - inputFile: path to the fasta input file  

@@ -1,5 +1,5 @@
 inputFile: /home/croux/Programmes/DILS_4pop_SFS/example/data/RNAseq_nucl.fasta # full pathway to the input file (fasta format)
-datapath: /home/croux/Programmes/DILS_4pop_SFS/example/analysis/test_v2 # full pathway to the directory where the analysis will be performed, i.e, where the results will be stored
+datapath: /home/croux/Programmes/DILS_4pop_SFS/example/analysis/test_v3 # full pathway to the directory where the analysis will be performed, i.e, where the results will be stored
 region: coding
 nameA: E1
 nameB: W3
@@ -19,11 +19,11 @@ M_bound_min: 0.4 # migration rates in 4.N.m
 M_bound_max: 40
 shape_bound_min: 1 # shape parameters of the Beta distributions
 shape_bound_max: 20
-topologies: topo1,topo2,topo3 #topo1 or topo2 or topo3 or topo1,topo2 or topo1,topo3 or topo2,topo3 or topo1,topo2,topo3
+topologies: topo1 #topo1 or topo2 or topo3 or topo1,topo2 or topo1,topo3 or topo2,topo3 or topo1,topo2,topo3
 migAB: 0,1 #0 or 1 or 0,1
-migAC: 0,1
-migAD: 0,1
-migBC: 0,1
-migBD: 0,1
+migAC: 0
+migAD: 0
+migBC: 0
+migBD: 0
 migCD: 0,1
 

@@ -12,6 +12,8 @@ for arg in sys.argv:
 		datapath = tmp[1]
 	if tmp[0] == 'simulationpath':
 		simulationpath = tmp[1]
+	if tmp[0] == 'folded':
+		folded = tmp[1] # '1' or '0'
 
 if datapath == None:
 	print("ERROR: please specify a correct datapath")
@@ -19,6 +21,45 @@ if datapath == None:
 if simulationpath == None:
 	print("ERROR: please specify a correct simulationpath")
 	sys.exit()
+
+
+def convert_orientation(spA, spB, spC, spD):
+	# converts sequences in lists
+	spA_matrix = [list(map(int, seq)) for seq in spA]
+	spB_matrix = [list(map(int, seq)) for seq in spB]
+	spC_matrix = [list(map(int, seq)) for seq in spC]
+	spD_matrix = [list(map(int, seq)) for seq in spD]
+
+	# combine all species
+	combined_matrix = spA_matrix + spB_matrix + spC_matrix + spD_matrix
+
+	# get the number of positions assuming all sequences have same length
+	nPositions = len(combined_matrix[0])
+
+
+	# For each position (column), count the number of 1's and 0's
+	for i in range(nPositions):
+		count_1 = sum([ seq[i] for seq in combined_matrix])
+		total = len(combined_matrix)
+
+		# if there is a majority of 1
+		if count_1 > (total/2.0):
+			for j in range(len(spA_matrix)):
+				spA_matrix[j][i] = abs(spA_matrix[j][i]-1)
+			for j in range(len(spB_matrix)):
+				spB_matrix[j][i] = abs(spB_matrix[j][i]-1)
+			for j in range(len(spC_matrix)):
+				spC_matrix[j][i] = abs(spC_matrix[j][i]-1)
+			for j in range(len(spD_matrix)):
+				spD_matrix[j][i] = abs(spD_matrix[j][i]-1)
+
+	spA_converted = [ ''.join([ str(j) for j in k ]) for k in spA_matrix ]
+	spB_converted = [ ''.join([ str(j) for j in k ]) for k in spB_matrix ]
+	spC_converted = [ ''.join([ str(j) for j in k ]) for k in spC_matrix ]
+	spD_converted = [ ''.join([ str(j) for j in k ]) for k in spD_matrix ]
+
+	return spA_converted, spB_converted, spC_converted, spD_converted
+
 
 def cr_sqrt(x):
 	# returns the square root of a list of variables [x]
@@ -624,18 +665,20 @@ def ABBA_BABA(spA, spB, spC, spD):
 def categorise_frequence(f):
 	# 5  bins of frequencies for the 4D SFS
 	# =0; ]0, 1/3]; ]1/3, 2/3]; ]2/3, 1[; =1
+	up_bound=1.0
+
 	if f == 0:
 		return 0
-	elif 0 < f <= 1.0/3.0:
+	elif 0 < f <= up_bound/3.0:
 		return 1
-	elif 1.0/3.0 < f <= 2.0/3.0:
+	elif up_bound/3.0 < f <= 2*up_bound/3.0:
 		return 2
-	elif 2.0/3.0 < f < 1:
+	elif 2*up_bound/3.0 < f < up_bound:
 		return 3
-	elif f == 1:
+	elif f == up_bound:
 		return 4
 	else:
-		raise ValueError("Frequency must be between 0 and 1 included")
+		raise ValueError("Frequency must be between 0 and {up_bound} included".format(up_bound=up_bound))
 
 # Function to get allele frequencies
 def get_frequencies(aln):
@@ -993,6 +1036,10 @@ for line in sys.stdin: # read the ms's output from the stdin
 				
 				# end of the block of sequences -> start the calculations of various statistics
 				if nSam_cnt == (nSamA[nLoci_cnt - 1] + nSamB[nLoci_cnt - 1] + nSamC[nLoci_cnt - 1] + nSamD[nLoci_cnt - 1]):
+					# converts derived alleles in minor alleles if folded==1
+					if folded=='1':
+						spA, spB, spC, spD = convert_orientation(spA, spB, spC, spD)
+
 					#print("locus {0}".format(nLoci_cnt))
 					#print("spA\n{0}\n\nspB\n{1}\n\nspC\n{2}\n\nspD\n{3}\n".format("\n".join(spA), "\n".join(spB), "\n".join(spC), "\n".join(spD)))
 					tmpA = compFreq(spA, segsites)

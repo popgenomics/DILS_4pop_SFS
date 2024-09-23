@@ -2,7 +2,7 @@
 ############## The only line that needs to be adapted ##############
 ####################################################################
 binpath='/home/camille.roux/DILS_4pop/bin'
-
+binpath='/home/croux/Programmes/DILS_4pop_SFS/bin'
 #######################################################################################################
 ############## You can change everything underneath, but I don't guarantee it will work. ##############
 #######################################################################################################
@@ -32,9 +32,16 @@ nameA = config['nameA'] # "E1" # name of species/population A
 nameB = config['nameB'] # "W3"
 nameC = config['nameC'] # "W1"
 nameD = config['nameD'] # "W2"
+nameOut = config['nameOut'] # "NA" if folded SFS; "XXX" if unfolded where XXX is the name of the outgroup species
 maxN = config['maxN'] # 0.5 # loci with a proportion of missing data (i.e, non A, T, C or G) above maxN are excluded
 nMin = config['nMin'] # 8 # loci with less than nMin gametes are excluded
 Lmin = config['Lmin'] # 200 # loci with less than Lmin valid positions (without missing data, and in at least nMin copies) are excluded
+
+if config['nameOut']=='NA':
+	folded = '1'
+else:
+	folded = '0'
+
 
 ## bpfile
 mu = config['mu'] # 0.00000000731 # mutation rate per position and per generation. Used only if mutation='mu'
@@ -120,7 +127,7 @@ rule makeInputFiles:
 		expand("{datapath}/ABCstat.txt", datapath=datapath),
 		expand("{datapath}/general_infos.txt", datapath=datapath)
 	shell:
-		"python3 {binpath}/fasta2bpfile.py binpath={binpath} simulationpath={datapath} datapath={datapath} fastafile={inputFile} spA={nameA} spB={nameB} spC={nameC} spD={nameD} maxN={maxN} nMin={nMin} region={region} Lmin={Lmin} mu={mu} rec={rec} Nref={Nref}"
+		"python3 {binpath}/fasta2bpfile.py binpath={binpath} simulationpath={datapath} datapath={datapath} fastafile={inputFile} spA={nameA} spB={nameB} spC={nameC} spD={nameD} nameOut={nameOut} maxN={maxN} nMin={nMin} region={region} Lmin={Lmin} mu={mu} rec={rec} Nref={Nref}"
 
 ####################
 # model comparison #
@@ -138,7 +145,7 @@ rule simulations4modelComp:
 	shell:
 		"echo {wildcards.model} {wildcards.AB} {wildcards.AC} {wildcards.AD} {wildcards.BC} {wildcards.BD} {wildcards.CD} >> {datapath}/liste_models.txt; "
 		"simulationpath={datapath}/modelComp/{wildcards.model}_{wildcards.AB}_{wildcards.AC}_{wildcards.AD}_{wildcards.BC}_{wildcards.BD}_{wildcards.CD}_{wildcards.iteration}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model={wildcards.model} nMultilocus={nMultilocus} mutation={mutation_modelComp} AB={wildcards.AB} AC={wildcards.AC} AD={wildcards.AD} BC={wildcards.BC} BD={wildcards.BD} CD={wildcards.CD} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=posterior posteriorFile=None"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model={wildcards.model} nMultilocus={nMultilocus} mutation={mutation_modelComp} folded={folded} AB={wildcards.AB} AC={wildcards.AC} AD={wildcards.AD} BC={wildcards.BC} BD={wildcards.BD} CD={wildcards.CD} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=posterior posteriorFile=None"
 
 ##############
 # inferences #
@@ -176,7 +183,7 @@ rule simulations4estimates:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/param/best_{wildcards.iteration}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=posterior posteriorFile=None"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=posterior posteriorFile=None"
 
 ########################
 # inferences posterior #
@@ -212,7 +219,7 @@ rule simulations_opti1:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/opti1/best_{wildcards.iteration}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti1 posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti1 posteriorFile={input}"
 
 #####################
 # inferences opti 1 #
@@ -247,7 +254,7 @@ rule simulations_opti2:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/opti2/best_{wildcards.iteration}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti2 posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti2 posteriorFile={input}"
 
 #####################
 # inferences opti 2 #
@@ -282,7 +289,7 @@ rule simulations_opti3:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/opti3/best_{wildcards.iteration}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti3 posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti3 posteriorFile={input}"
 
 #####################
 # inferences opti 3 #
@@ -317,7 +324,7 @@ rule simulations_opti4:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/opti4/best_{wildcards.iteration}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti4 posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti4 posteriorFile={input}"
 
 #####################
 # inferences opti 4 #
@@ -352,7 +359,7 @@ rule simulations_opti5:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/opti5/best_{wildcards.iteration}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti5 posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=opti5 posteriorFile={input}"
 
 #####################
 # inferences opti 5 #
@@ -386,7 +393,7 @@ rule gof_posterior:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/gof_param/best_{wildcards.iteration_gof}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
 
 rule gof_opti1:
 	input:
@@ -403,7 +410,7 @@ rule gof_opti1:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/gof_opti1/best_{wildcards.iteration_gof}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
 
 rule gof_opti2:
 	input:
@@ -420,7 +427,7 @@ rule gof_opti2:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/gof_opti2/best_{wildcards.iteration_gof}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
 
 rule gof_opti3:
 	input:
@@ -437,7 +444,7 @@ rule gof_opti3:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/gof_opti3/best_{wildcards.iteration_gof}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
 
 rule gof_opti4:
 	input:
@@ -454,7 +461,7 @@ rule gof_opti4:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/gof_opti4/best_{wildcards.iteration_gof}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
 
 rule gof_opti5:
 	input:
@@ -471,7 +478,7 @@ rule gof_opti5:
 		"bestBD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $6}}'); "
 		"bestCD=$(cat {datapath}/modelComp/best_model_vector.txt | awk '{{print $7}}'); "
 		"simulationpath={datapath}/gof_opti5/best_{wildcards.iteration_gof}; "
-		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
+		"python3 {binpath}/simulations_4pop.py binpath={binpath} datapath={datapath} simulationpath=$simulationpath model=${{bestTopo}} nMultilocus={nMultilocus} mutation={mutation_paramEstim} folded={folded} AB=${{bestAB}} AC=${{bestAC}} AD=${{bestAD}} BC=${{bestBC}} BD=${{bestBD}} CD=${{bestCD}} N={N_bound_min} N={N_bound_max} T={T_bound_min} T={T_bound_max} M={M_bound_min} M={M_bound_max} shape={shape_bound_min} shape={shape_bound_max} target=gof posteriorFile={input}"
 
 rule gof:
 	input:

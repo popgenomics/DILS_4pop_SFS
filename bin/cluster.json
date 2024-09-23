@@ -5,8 +5,8 @@
         "ntasks" : 1,
         "n" : 1,
 	"cpusPerTask" : 1,
-	"memPerCpu" : 3000,
-	"time" : "04:00:00"
+	"memPerCpu" : 4000,
+	"time" : "20:00:00"
     },
     "makeInputFiles" :
     {
@@ -35,8 +35,8 @@
     "paramEstimates" :
     {
 	"cpusPerTask" : 8,
-	"time" : "05:00:00",
-	"memPerCpu" : 2500 
+	"time" : "10:00:00",
+	"memPerCpu" : 4000 
     },
     "simulations_opti1" :
     {
@@ -47,8 +47,8 @@
     "opti1" :
     {
 	"cpusPerTask" : 8,
-	"time" : "05:00:00",
-	"memPerCpu" : 2500 
+	"time" : "10:00:00",
+	"memPerCpu" : 4000 
     },
     "simulations_opti2" :
     {
@@ -59,8 +59,8 @@
     "opti2" :
     {
 	"cpusPerTask" : 8,
-	"time" : "05:00:00",
-	"memPerCpu" : 2500 
+	"time" : "10:00:00",
+	"memPerCpu" : 4000 
     },
     "simulations_opti3" :
     {
@@ -71,8 +71,8 @@
     "opti3" :
     {
 	"cpusPerTask" : 8,
-	"time" : "05:00:00",
-	"memPerCpu" : 2500
+	"time" : "10:00:00",
+	"memPerCpu" : 4000
     },
     "simulations_opti4" :
     {
@@ -83,8 +83,8 @@
     "opti4" :
     {
 	"cpusPerTask" : 8,
-	"time" : "05:00:00",
-	"memPerCpu" :2500 
+	"time" : "10:00:00",
+	"memPerCpu" :4000 
     },
     "simulations_opti5" :
     {
@@ -95,8 +95,8 @@
     "opti5" :
     {
 	"cpusPerTask" : 8,
-	"time" : "05:00:00",
-	"memPerCpu" : 2500
+	"time" : "10:00:00",
+	"memPerCpu" : 4000
     },
     "gof_posterior" :
     {
